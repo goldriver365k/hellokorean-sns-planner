@@ -269,6 +269,29 @@ th, td {
   margin: 0;
 }
 
+/* STEP 7: 카드 안의 홍보 링크(UTM) 표시 줄 */
+.link-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 4px 0 8px;
+  font-size: 12px;
+  color: #666;
+}
+
+.link-label {
+  flex-shrink: 0;
+  font-weight: 600;
+}
+
+.link-value {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
 .done-badge {
   display: inline-block;
   padding: 1px 6px;

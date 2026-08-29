@@ -115,10 +115,12 @@ export default function TodayPromotion({ data, updateDay, toggleCompletion, onNa
                     key={sns}
                     sns={sns}
                     countryLabel={countryDef ? countryDef.nameKo : slot.country}
+                    country={slot.country}
                     language={slot.language}
                     topic={slot.topic}
                     completed={slot.completed}
                     serviceInfo={serviceInfo}
+                    date={selectedDate}
                     onToggleComplete={() => toggleCompletion(selectedDay, sns)}
                   />
                 );

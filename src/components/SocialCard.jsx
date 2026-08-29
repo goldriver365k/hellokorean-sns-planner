@@ -4,10 +4,21 @@ import { getSampleContent, buildCopyText } from '../utils/sampleContent.js';
 
 // STEP 6: SNS 하나(오늘의 홍보 카드)를 표시하는 공통 컴포넌트.
 // 국가/언어/주제 표시 + 플랫폼별 복사 버튼 구조 + 홍보 완료 체크를 담당한다.
-export default function SocialCard({ sns, countryLabel, language, topic, completed, serviceInfo, onToggleComplete }) {
+// STEP 7: country/date를 받아 SNS+국가+날짜 기준 UTM 링크를 함께 생성한다.
+export default function SocialCard({
+  sns,
+  countryLabel,
+  country,
+  language,
+  topic,
+  completed,
+  serviceInfo,
+  date,
+  onToggleComplete,
+}) {
   const [message, setMessage] = useState('');
   const config = SOCIAL_CONFIG[sns] || { copyMode: 'full', titleSeparate: false };
-  const content = getSampleContent(sns, topic, serviceInfo);
+  const content = getSampleContent(sns, topic, serviceInfo, { country, date });
 
   useEffect(() => {
     if (!message) return undefined;
@@ -15,11 +26,11 @@ export default function SocialCard({ sns, countryLabel, language, topic, complet
     return () => clearTimeout(timer);
   }, [message]);
 
-  const copy = async (text) => {
+  const copy = async (text, successMessage = '복사되었습니다') => {
     try {
       if (!navigator.clipboard) throw new Error('clipboard unavailable');
       await navigator.clipboard.writeText(text);
-      setMessage('복사되었습니다');
+      setMessage(successMessage);
     } catch {
       setMessage('복사에 실패했습니다.');
     }
@@ -64,6 +75,16 @@ export default function SocialCard({ sns, countryLabel, language, topic, complet
       </div>
 
       {message && <p className="copy-message">{message}</p>}
+
+      <div className="link-row">
+        <span className="link-label">홍보 링크</span>
+        <span className="link-value" title={content.utmUrl}>
+          {content.utmUrl}
+        </span>
+        <button type="button" className="small-btn" onClick={() => copy(content.utmUrl, '링크가 복사되었습니다')}>
+          링크 복사
+        </button>
+      </div>
 
       <label className="complete-toggle">
         <input type="checkbox" checked={!!completed} onChange={onToggleComplete} /> 홍보 완료
