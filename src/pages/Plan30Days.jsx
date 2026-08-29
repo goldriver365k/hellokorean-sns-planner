@@ -76,7 +76,7 @@ export default function Plan30Days({
                     const countryDef = COUNTRIES.find((c) => c.nameEn === info.country);
                     return (
                       <div key={sns} className="sns-slot">
-                        <strong>{sns}</strong>
+                        <strong>{sns}</strong> {info.completed && <span className="done-badge">완료</span>}
                         <div>{countryDef ? countryDef.nameKo : info.country}</div>
                         <div className="slot-language">{info.language}</div>
                         <div className="slot-topic">{info.topic?.title}</div>

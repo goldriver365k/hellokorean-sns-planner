@@ -119,6 +119,18 @@ export function formatDisplayDate(date) {
   return `${y}.${m}.${d}`;
 }
 
+// STEP 6: 오늘이 시작일 기준 며칠째인지 계산 (getTodayDayNumber와 달리 1~30으로 clamp하지 않는다)
+// null이면 startDate 미설정. 1 미만이면 계획 시작 전, 30 초과면 계획 종료 후.
+export function getRawDayOffset(startDate) {
+  if (!startDate) return null;
+  const start = new Date(startDate);
+  if (Number.isNaN(start.getTime())) return null;
+  const today = new Date();
+  start.setHours(0, 0, 0, 0);
+  today.setHours(0, 0, 0, 0);
+  return Math.floor((today - start) / (1000 * 60 * 60 * 24)) + 1;
+}
+
 // 오늘이 30일 계획 중 며칠째인지 계산 (startDate 미설정 시 1일차)
 export function getTodayDayNumber(startDate) {
   if (!startDate) return 1;

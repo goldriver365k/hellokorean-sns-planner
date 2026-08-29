@@ -135,6 +135,27 @@ export default function App() {
     });
   };
 
+  // STEP 6: 특정 날짜의 특정 SNS 홍보 완료 상태를 토글 (true ↔ false)
+  const toggleCompletion = (day, sns) => {
+    setData((prev) => {
+      if (!prev.monthlySchedule) return prev;
+      const dayIndex = prev.monthlySchedule.findIndex((d) => d.day === day);
+      if (dayIndex === -1) return prev;
+      const slot = prev.monthlySchedule[dayIndex].socials[sns];
+      if (!slot) return prev;
+
+      const newSchedule = [...prev.monthlySchedule];
+      newSchedule[dayIndex] = {
+        ...newSchedule[dayIndex],
+        socials: {
+          ...newSchedule[dayIndex].socials,
+          [sns]: { ...slot, completed: !slot.completed },
+        },
+      };
+      return { ...prev, monthlySchedule: newSchedule };
+    });
+  };
+
   return (
     <div className="app">
       <Navbar current={page} onNavigate={setPage} />
@@ -151,7 +172,14 @@ export default function App() {
             regenerateDay={regenerateDay}
           />
         )}
-        {page === 'today' && <TodayPromotion data={data} updateDay={updateDay} />}
+        {page === 'today' && (
+          <TodayPromotion
+            data={data}
+            updateDay={updateDay}
+            toggleCompletion={toggleCompletion}
+            onNavigateToPlan={() => setPage('plan')}
+          />
+        )}
         {page === 'settings' && (
           <Settings
             data={data}

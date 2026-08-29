@@ -235,6 +235,51 @@ th, td {
   cursor: pointer;
 }
 
+/* STEP 6: 오늘의 홍보 - 날짜 이동 */
+.day-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 0;
+}
+
+/* STEP 6: SNS 카드 - 복사 버튼/완료 상태 */
+.social-card h3 {
+  margin: 0 0 6px;
+  font-size: 15px;
+}
+
+.copy-actions {
+  display: flex;
+  gap: 8px;
+  margin: 8px 0 4px;
+}
+
+.copy-message {
+  margin: 0 0 6px;
+  font-size: 13px;
+  color: #16a34a;
+}
+
+.complete-toggle {
+  display: block;
+  font-size: 13px;
+  font-weight: 400;
+  margin: 0;
+}
+
+.done-badge {
+  display: inline-block;
+  padding: 1px 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #555;
+  background: #eee;
+  border-radius: 10px;
+  vertical-align: middle;
+}
+
 /* 모바일 대응 */
 @media (max-width: 600px) {
   .navbar {
