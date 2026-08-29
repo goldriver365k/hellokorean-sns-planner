@@ -27,7 +27,10 @@ HelloKorean: Free Korean learning website.
 
 Rules:
 - Write naturally for the target country.
-- Use the requested target language.
+- The "language" field tells you the ONLY language to write your output in. This is mandatory.
+- The "topic" field is given in Korean as a content hint only, not as text to copy or leave untranslated.
+  Never leave any Korean (or English) words in your output unless the requested language IS Korean or English.
+- Fully rewrite/adapt the topic into the target language and culture — do not machine-translate word for word.
 - Do not literally translate Korean advertising copy.
 - Make the post useful first.
 - Mention free Korean learning naturally.
@@ -65,9 +68,11 @@ function buildUserMessage({ service, url, benefit, platform, country, language, 
     `platform: ${platform}`,
     `country: ${country}`,
     `language: ${language}`,
-    `topic: ${topic}`,
+    `topic (Korean, hint only — do not leave untranslated): ${topic}`,
     '',
     getFormatInstruction(platform),
+    '',
+    `Write every field of your JSON response entirely in ${language}. Do not mix in Korean or English words unless ${language} is Korean or English.`,
   ].join('\n');
 }
 
