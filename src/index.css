@@ -141,23 +141,88 @@ th, td {
   color: #999;
 }
 
-/* STEP 3: SNS별 국가 자동 배정 결과 표시 */
+/* STEP 5: Day 카드 그리드 — PC 2~3열, 모바일 1열 (외부 캘린더/그리드 라이브러리 없이 CSS만 사용) */
+.day-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+/* STEP 3: SNS별 국가 자동 배정 결과 표시 (STEP 5에서 카드 내부 구조 보강) */
 .schedule-day {
   border: 1px solid #eee;
   border-radius: 6px;
   padding: 8px 12px;
-  margin-bottom: 8px;
 }
 
 .schedule-day h3 {
-  margin: 0 0 6px;
+  margin: 0 0 4px;
   font-size: 15px;
 }
 
-.schedule-day p {
+.day-date {
+  margin: 0 0 8px;
+  font-size: 12px;
+  color: #888;
+}
+
+.today-badge {
   display: inline-block;
-  margin: 0 16px 6px 0;
-  font-size: 14px;
+  margin-left: 6px;
+  padding: 1px 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  background: #16a34a;
+  border-radius: 10px;
+  vertical-align: middle;
+}
+
+/* STEP 5: Day 카드 안의 SNS별 슬롯 */
+.sns-slot {
+  border-top: 1px solid #f0f0f0;
+  padding: 6px 0;
+  font-size: 13px;
+}
+
+.sns-slot:first-of-type {
+  border-top: none;
+}
+
+.slot-language {
+  color: #666;
+}
+
+.slot-topic {
+  margin: 2px 0;
+}
+
+.slot-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.small-select {
+  font-size: 11px;
+  padding: 2px 4px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.day-regen-btn {
+  margin-top: 8px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 
 /* STEP 4: 주제 변경 소형 버튼 */

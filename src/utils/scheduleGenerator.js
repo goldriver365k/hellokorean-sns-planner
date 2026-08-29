@@ -130,6 +130,30 @@ export function generateMonthlySchedule(settings) {
   return schedule;
 }
 
+// STEP 5: 하루치 "이 날짜 다시 배정"에서 쓰는 국가 1개 가중 랜덤 선택.
+// socialCountryScores 점수에 비례해서 뽑되, avoidCodes(이웃 날짜와 같은 국가)는 가능하면 피한다.
+export function pickWeightedCountry(enabledCountryCodes, sns, avoidCodes = []) {
+  const scored = enabledCountryCodes.map((code) => ({
+    code,
+    score: SOCIAL_COUNTRY_SCORES[code]?.[sns] ?? 0,
+  }));
+
+  let pool = scored.filter((c) => !avoidCodes.includes(c.code));
+  if (pool.length === 0) pool = scored; // 선택지가 없으면(모두 회피 대상) 예외적으로 전체 허용
+
+  const total = pool.reduce((sum, c) => sum + c.score, 0);
+  if (total <= 0) {
+    return pool[Math.floor(Math.random() * pool.length)].code;
+  }
+
+  let r = Math.random() * total;
+  for (const c of pool) {
+    r -= c.score;
+    if (r <= 0) return c.code;
+  }
+  return pool[pool.length - 1].code;
+}
+
 // 개발 확인용: SNS별 국가 배정 횟수 집계 (console.log 등으로만 확인하면 충분)
 export function getScheduleStats(schedule) {
   const stats = {};

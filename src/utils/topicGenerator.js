@@ -89,27 +89,19 @@ export function generateTopicsForSchedule(schedule) {
   });
 }
 
-// 특정 날짜의 특정 SNS 슬롯 하나만 다른 주제로 변경한다. (국가/언어는 그대로)
-export function changeTopicForSlot(schedule, day, sns) {
-  const dayIndex = schedule.findIndex((d) => d.day === day);
-  if (dayIndex === -1) return schedule;
-
-  const slot = schedule[dayIndex].socials[sns];
-  if (!slot) return schedule;
-
-  const interests = getInterestsForCountryName(slot.country);
-
-  // 하루 전 같은 SNS의 주제 (연속 방지용)
+// 반복 방지 규칙(연속 금지 / 최근 5회 / 오늘 다른 SNS)에 필요한 제외 목록을 계산한다.
+// changeTopicForSlot과 changeCountryForSlot(STEP 5)이 함께 사용하는 공용 로직이다.
+function getExclusionsForSlot(schedule, dayIndex, sns, country, currentTopicId) {
   const prevDay = schedule[dayIndex - 1];
   const excludeConsecutive = new Set();
   if (prevDay?.socials?.[sns]?.topic?.id) excludeConsecutive.add(prevDay.socials[sns].topic.id);
-  if (slot.topic?.id) excludeConsecutive.add(slot.topic.id); // 반드시 지금과 다른 주제로 바뀌어야 함
+  if (currentTopicId) excludeConsecutive.add(currentTopicId); // 지금과는 반드시 다른 주제여야 함
 
   // 같은 SNS + 같은 국가의 최근 5회 (이전 날짜들 기준)
   const excludeRecent = new Set();
   for (let i = dayIndex - 1; i >= 0 && excludeRecent.size < RECENT_WINDOW; i--) {
     const pastSlot = schedule[i].socials[sns];
-    if (pastSlot && pastSlot.country === slot.country && pastSlot.topic?.id) {
+    if (pastSlot && pastSlot.country === country && pastSlot.topic?.id) {
       excludeRecent.add(pastSlot.topic.id);
     }
   }
@@ -120,7 +112,20 @@ export function changeTopicForSlot(schedule, day, sns) {
     if (otherSns !== sns && otherSlot.topic?.id) excludeToday.add(otherSlot.topic.id);
   });
 
-  const topic = pickTopic({ interests, excludeConsecutive, excludeRecent, excludeToday });
+  return { excludeConsecutive, excludeRecent, excludeToday };
+}
+
+// 특정 날짜의 특정 SNS 슬롯 하나만 다른 주제로 변경한다. (국가/언어는 그대로)
+export function changeTopicForSlot(schedule, day, sns) {
+  const dayIndex = schedule.findIndex((d) => d.day === day);
+  if (dayIndex === -1) return schedule;
+
+  const slot = schedule[dayIndex].socials[sns];
+  if (!slot) return schedule;
+
+  const interests = getInterestsForCountryName(slot.country);
+  const exclusions = getExclusionsForSlot(schedule, dayIndex, sns, slot.country, slot.topic?.id);
+  const topic = pickTopic({ interests, ...exclusions });
 
   const newSchedule = [...schedule];
   newSchedule[dayIndex] = {
@@ -128,6 +133,38 @@ export function changeTopicForSlot(schedule, day, sns) {
     socials: {
       ...newSchedule[dayIndex].socials,
       [sns]: { ...slot, topic: { id: topic.id, title: getTopicTitle(topic, slot.country) } },
+    },
+  };
+  return newSchedule;
+}
+
+// STEP 5: 특정 날짜의 특정 SNS 슬롯의 국가를 변경한다.
+// - SNS는 그대로 유지한다.
+// - countries.js 기준으로 언어를 자동으로 맞춘다.
+// - 새 국가의 관심사에 맞는 topic을 다시 고른다 (changeTopicForSlot과 동일한 우선순위/반복방지 로직 재사용).
+export function changeCountryForSlot(schedule, day, sns, newCountryCode) {
+  const dayIndex = schedule.findIndex((d) => d.day === day);
+  if (dayIndex === -1) return schedule;
+
+  const slot = schedule[dayIndex].socials[sns];
+  const newCountryDef = COUNTRIES.find((c) => c.code === newCountryCode);
+  if (!slot || !newCountryDef) return schedule;
+
+  const interests = COUNTRY_INTERESTS[newCountryDef.code] || [];
+  const exclusions = getExclusionsForSlot(schedule, dayIndex, sns, newCountryDef.nameEn, null);
+  const topic = pickTopic({ interests, ...exclusions });
+
+  const newSchedule = [...schedule];
+  newSchedule[dayIndex] = {
+    ...newSchedule[dayIndex],
+    socials: {
+      ...newSchedule[dayIndex].socials,
+      [sns]: {
+        ...slot,
+        country: newCountryDef.nameEn,
+        language: newCountryDef.language,
+        topic: { id: topic.id, title: getTopicTitle(topic, newCountryDef.nameEn) },
+      },
     },
   };
   return newSchedule;

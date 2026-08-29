@@ -99,6 +99,26 @@ export function saveData(data) {
   }
 }
 
+// STEP 5: startDate 기준으로 dayNumber(1~30) 날짜의 Date 객체를 계산 (외부 날짜 라이브러리 사용 안 함)
+export function getDateForDay(startDate, dayNumber) {
+  if (!startDate) return null;
+  const start = new Date(startDate);
+  if (Number.isNaN(start.getTime())) return null;
+  start.setHours(0, 0, 0, 0);
+  const d = new Date(start);
+  d.setDate(d.getDate() + (dayNumber - 1));
+  return d;
+}
+
+// STEP 5: 화면 표시용 날짜 포맷 (예: 2026.09.01)
+export function formatDisplayDate(date) {
+  if (!date) return '';
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}.${m}.${d}`;
+}
+
 // 오늘이 30일 계획 중 며칠째인지 계산 (startDate 미설정 시 1일차)
 export function getTodayDayNumber(startDate) {
   if (!startDate) return 1;
