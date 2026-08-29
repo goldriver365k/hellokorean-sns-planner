@@ -1,6 +1,8 @@
 // STEP 1: LocalStorage 기본 저장 구조
 // - 별도 서버/DB 없이 브라우저 LocalStorage만 사용 (비용 최소화 원칙)
 
+import { COUNTRIES } from '../config/countries.js';
+
 const STORAGE_KEY = 'hellokorean_sns_planner_v1';
 
 // HelloKorean 기본 정보 (설정 화면에서 수정 가능)
@@ -11,6 +13,27 @@ export const DEFAULT_SERVICE_INFO = {
   coreMessageEn: 'Learn Korean for Free',
   channels: ['Threads', 'Facebook', 'Instagram', 'Telegram'],
 };
+
+// STEP 2: 설정 화면의 "사용 SNS" 목록 (고정 4개)
+export const SNS_CHANNELS = ['Threads', 'Facebook', 'Instagram', 'Telegram'];
+
+// STEP 2: 홍보 국가 ON/OFF 기본값 (COUNTRIES config 기준, 전부 true)
+function createDefaultCountrySettings() {
+  const result = {};
+  COUNTRIES.forEach((c) => {
+    result[c.code] = true;
+  });
+  return result;
+}
+
+// STEP 2: 사용 SNS ON/OFF 기본값 (SNS_CHANNELS 기준, 전부 true)
+function createDefaultSnsSettings() {
+  const result = {};
+  SNS_CHANNELS.forEach((name) => {
+    result[name] = true;
+  });
+  return result;
+}
 
 // 30일 홍보 계획의 하루 항목 기본값
 function createEmptyDay(day) {
@@ -31,6 +54,8 @@ export function getDefaultData() {
     serviceInfo: { ...DEFAULT_SERVICE_INFO },
     plan: createDefaultPlan(),
     startDate: null, // 30일 계획 시작일 (YYYY-MM-DD), 설정에서 지정
+    countries: createDefaultCountrySettings(), // STEP 2: 홍보 국가 ON/OFF
+    snsChannels: createDefaultSnsSettings(), // STEP 2: 사용 SNS ON/OFF
   };
 }
 
@@ -42,6 +67,8 @@ function mergeWithDefaults(data) {
     ...data,
     serviceInfo: { ...def.serviceInfo, ...(data?.serviceInfo || {}) },
     plan: Array.isArray(data?.plan) && data.plan.length === 30 ? data.plan : def.plan,
+    countries: { ...def.countries, ...(data?.countries || {}) },
+    snsChannels: { ...def.snsChannels, ...(data?.snsChannels || {}) },
   };
 }
 

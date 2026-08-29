@@ -107,6 +107,40 @@ th, td {
   background: #f0fdf4;
 }
 
+/* STEP 2: 국가/SNS ON-OFF 토글 행 */
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.toggle-row:last-child {
+  border-bottom: none;
+}
+
+.toggle-on,
+.toggle-off {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 4px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.toggle-on {
+  background: #2563eb;
+  color: #fff;
+  border-color: #2563eb;
+}
+
+.toggle-off {
+  background: #f5f5f5;
+  color: #999;
+}
+
 /* 모바일 대응 */
 @media (max-width: 600px) {
   .navbar {

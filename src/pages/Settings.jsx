@@ -1,8 +1,16 @@
 import { useState } from 'react';
-import { getDefaultData } from '../utils/storage.js';
+import { getDefaultData, SNS_CHANNELS } from '../utils/storage.js';
+import { COUNTRIES } from '../config/countries.js';
 
-export default function Settings({ data, updateServiceInfo, updateStartDate, resetAll }) {
-  const { serviceInfo, startDate } = data;
+export default function Settings({
+  data,
+  updateServiceInfo,
+  updateStartDate,
+  updateCountry,
+  updateSnsChannel,
+  resetAll,
+}) {
+  const { serviceInfo, startDate, countries, snsChannels } = data;
   const [channelsText, setChannelsText] = useState(serviceInfo.channels.join(', '));
 
   const handleChannelsBlur = () => {
@@ -67,6 +75,38 @@ export default function Settings({ data, updateServiceInfo, updateStartDate, res
           onChange={(e) => setChannelsText(e.target.value)}
           onBlur={handleChannelsBlur}
         />
+      </div>
+
+      <div className="card">
+        <h2>홍보 국가</h2>
+        {COUNTRIES.map((c) => (
+          <div className="toggle-row" key={c.code}>
+            <span>{c.nameKo}</span>
+            <button
+              type="button"
+              className={countries[c.code] ? 'toggle-on' : 'toggle-off'}
+              onClick={() => updateCountry(c.code, !countries[c.code])}
+            >
+              {countries[c.code] ? 'ON' : 'OFF'}
+            </button>
+          </div>
+        ))}
+      </div>
+
+      <div className="card">
+        <h2>사용 SNS</h2>
+        {SNS_CHANNELS.map((name) => (
+          <div className="toggle-row" key={name}>
+            <span>{name}</span>
+            <button
+              type="button"
+              className={snsChannels[name] ? 'toggle-on' : 'toggle-off'}
+              onClick={() => updateSnsChannel(name, !snsChannels[name])}
+            >
+              {snsChannels[name] ? 'ON' : 'OFF'}
+            </button>
+          </div>
+        ))}
       </div>
 
       <div className="card">

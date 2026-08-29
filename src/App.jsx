@@ -33,6 +33,22 @@ export default function App() {
     setData((prev) => ({ ...prev, startDate: value }));
   };
 
+  // STEP 2: 홍보 국가 ON/OFF
+  const updateCountry = (code, enabled) => {
+    setData((prev) => ({
+      ...prev,
+      countries: { ...prev.countries, [code]: enabled },
+    }));
+  };
+
+  // STEP 2: 사용 SNS ON/OFF
+  const updateSnsChannel = (name, enabled) => {
+    setData((prev) => ({
+      ...prev,
+      snsChannels: { ...prev.snsChannels, [name]: enabled },
+    }));
+  };
+
   const resetAll = () => {
     const def = getDefaultData();
     setData(def);
@@ -50,6 +66,8 @@ export default function App() {
             data={data}
             updateServiceInfo={updateServiceInfo}
             updateStartDate={updateStartDate}
+            updateCountry={updateCountry}
+            updateSnsChannel={updateSnsChannel}
             resetAll={resetAll}
           />
         )}
