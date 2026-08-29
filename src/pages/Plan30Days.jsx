@@ -1,4 +1,4 @@
-export default function Plan30Days({ data, updateDay, generateSchedule }) {
+export default function Plan30Days({ data, updateDay, generateSchedule, regenerateTopics, changeTopic }) {
   const { plan, serviceInfo, countries, snsChannels, monthlySchedule } = data;
 
   const enabledCountryCount = Object.values(countries).filter(Boolean).length;
@@ -19,8 +19,12 @@ export default function Plan30Days({ data, updateDay, generateSchedule }) {
         )}
         <button type="button" disabled={!canGenerate} onClick={generateSchedule}>
           {monthlySchedule ? '30일 다시 만들기' : '30일 계획 만들기'}
-        </button>
-
+        </button>{' '}
+        {monthlySchedule && (
+          <button type="button" onClick={regenerateTopics}>
+            주제 다시 배정
+          </button>
+        )}
         {monthlySchedule && (
           <div style={{ marginTop: 12 }}>
             {monthlySchedule.map((d) => (
@@ -31,6 +35,11 @@ export default function Plan30Days({ data, updateDay, generateSchedule }) {
                     <strong>{sns}</strong>
                     <br />
                     {info.country}
+                    <br />
+                    {info.topic?.title}{' '}
+                    <button type="button" className="small-btn" onClick={() => changeTopic(d.day, sns)}>
+                      주제 변경
+                    </button>
                   </p>
                 ))}
               </div>

@@ -160,6 +160,16 @@ th, td {
   font-size: 14px;
 }
 
+/* STEP 4: 주제 변경 소형 버튼 */
+.small-btn {
+  font-size: 11px;
+  padding: 2px 6px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: #fafafa;
+  cursor: pointer;
+}
+
 /* 모바일 대응 */
 @media (max-width: 600px) {
   .navbar {

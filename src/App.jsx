@@ -6,6 +6,7 @@ import TodayPromotion from './pages/TodayPromotion.jsx';
 import Settings from './pages/Settings.jsx';
 import { loadData, saveData, getDefaultData } from './utils/storage.js';
 import { generateMonthlySchedule } from './utils/scheduleGenerator.js';
+import { generateTopicsForSchedule, changeTopicForSlot } from './utils/topicGenerator.js';
 
 export default function App() {
   const [page, setPage] = useState('dashboard');
@@ -56,12 +57,30 @@ export default function App() {
   };
 
   // STEP 3: SNS별 30일 국가 자동 배정 생성 (버튼을 눌렀을 때만 새로 생성/덮어쓰기)
+  // STEP 4: 국가 배정 직후, 그 위에 주제(topic)도 함께 배정한다 (국가 배정 로직 자체는 그대로 사용)
   const generateSchedule = () => {
     setData((prev) => {
       const enabledCountries = Object.keys(prev.countries).filter((code) => prev.countries[code]);
       const enabledSocials = Object.keys(prev.snsChannels).filter((name) => prev.snsChannels[name]);
       const schedule = generateMonthlySchedule({ enabledCountries, enabledSocials, days: 30 });
-      return { ...prev, monthlySchedule: schedule };
+      const scheduleWithTopics = generateTopicsForSchedule(schedule);
+      return { ...prev, monthlySchedule: scheduleWithTopics };
+    });
+  };
+
+  // STEP 4: 국가/언어는 그대로 두고 주제만 전체 다시 배정
+  const regenerateTopics = () => {
+    setData((prev) => {
+      if (!prev.monthlySchedule) return prev;
+      return { ...prev, monthlySchedule: generateTopicsForSchedule(prev.monthlySchedule) };
+    });
+  };
+
+  // STEP 4: 특정 날짜의 특정 SNS 슬롯만 다른 주제로 변경
+  const changeTopic = (day, sns) => {
+    setData((prev) => {
+      if (!prev.monthlySchedule) return prev;
+      return { ...prev, monthlySchedule: changeTopicForSlot(prev.monthlySchedule, day, sns) };
     });
   };
 
@@ -71,7 +90,13 @@ export default function App() {
       <main>
         {page === 'dashboard' && <Dashboard data={data} />}
         {page === 'plan' && (
-          <Plan30Days data={data} updateDay={updateDay} generateSchedule={generateSchedule} />
+          <Plan30Days
+            data={data}
+            updateDay={updateDay}
+            generateSchedule={generateSchedule}
+            regenerateTopics={regenerateTopics}
+            changeTopic={changeTopic}
+          />
         )}
         {page === 'today' && <TodayPromotion data={data} updateDay={updateDay} />}
         {page === 'settings' && (
