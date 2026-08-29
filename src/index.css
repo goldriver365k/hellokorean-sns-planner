@@ -141,6 +141,25 @@ th, td {
   color: #999;
 }
 
+/* STEP 3: SNS별 국가 자동 배정 결과 표시 */
+.schedule-day {
+  border: 1px solid #eee;
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+}
+
+.schedule-day h3 {
+  margin: 0 0 6px;
+  font-size: 15px;
+}
+
+.schedule-day p {
+  display: inline-block;
+  margin: 0 16px 6px 0;
+  font-size: 14px;
+}
+
 /* 모바일 대응 */
 @media (max-width: 600px) {
   .navbar {

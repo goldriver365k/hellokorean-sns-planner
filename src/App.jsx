@@ -5,6 +5,7 @@ import Plan30Days from './pages/Plan30Days.jsx';
 import TodayPromotion from './pages/TodayPromotion.jsx';
 import Settings from './pages/Settings.jsx';
 import { loadData, saveData, getDefaultData } from './utils/storage.js';
+import { generateMonthlySchedule } from './utils/scheduleGenerator.js';
 
 export default function App() {
   const [page, setPage] = useState('dashboard');
@@ -54,12 +55,24 @@ export default function App() {
     setData(def);
   };
 
+  // STEP 3: SNS별 30일 국가 자동 배정 생성 (버튼을 눌렀을 때만 새로 생성/덮어쓰기)
+  const generateSchedule = () => {
+    setData((prev) => {
+      const enabledCountries = Object.keys(prev.countries).filter((code) => prev.countries[code]);
+      const enabledSocials = Object.keys(prev.snsChannels).filter((name) => prev.snsChannels[name]);
+      const schedule = generateMonthlySchedule({ enabledCountries, enabledSocials, days: 30 });
+      return { ...prev, monthlySchedule: schedule };
+    });
+  };
+
   return (
     <div className="app">
       <Navbar current={page} onNavigate={setPage} />
       <main>
         {page === 'dashboard' && <Dashboard data={data} />}
-        {page === 'plan' && <Plan30Days data={data} updateDay={updateDay} />}
+        {page === 'plan' && (
+          <Plan30Days data={data} updateDay={updateDay} generateSchedule={generateSchedule} />
+        )}
         {page === 'today' && <TodayPromotion data={data} updateDay={updateDay} />}
         {page === 'settings' && (
           <Settings

@@ -56,6 +56,10 @@ export function getDefaultData() {
     startDate: null, // 30일 계획 시작일 (YYYY-MM-DD), 설정에서 지정
     countries: createDefaultCountrySettings(), // STEP 2: 홍보 국가 ON/OFF
     snsChannels: createDefaultSnsSettings(), // STEP 2: 사용 SNS ON/OFF
+    // STEP 3: SNS별 국가 자동 배정 결과 (helloKoreanMonthlySchedule에 해당).
+    // 기존 STEP 1/2와 동일하게 하나의 STORAGE_KEY 객체 안에 함께 저장한다.
+    // null이면 아직 생성되지 않은 상태.
+    monthlySchedule: null,
   };
 }
 
