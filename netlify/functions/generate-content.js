@@ -200,13 +200,22 @@ export const handler = async (event) => {
       provider === 'openai'
         ? await callOpenAI({ apiKey, model, systemPrompt: SYSTEM_PROMPT, userMessage })
         : await callAnthropic({ apiKey, model, systemPrompt: SYSTEM_PROMPT, userMessage });
-  } catch {
+  } catch (err) {
+    // 진단용 로그: HTTP 상태 코드만 남긴다 (API KEY, 응답 본문 등 민감 정보는 절대 남기지 않음)
+    console.error('[hellokorean] AI upstream call failed:', provider, err?.message);
     return jsonResponse(200, { success: false, error: 'AI 응답을 처리할 수 없습니다.', code: 'UPSTREAM_ERROR' });
   }
 
   const parsed = safeParseJson(rawText);
   const validated = validateContent(platform, parsed);
   if (!validated) {
+    // 진단용 로그: 응답 길이/파싱 성공 여부만 남긴다 (본문 내용은 남기지 않음)
+    console.error(
+      '[hellokorean] AI response invalid:',
+      provider,
+      'length=' + (rawText ? rawText.length : 0),
+      'parsedOk=' + !!parsed
+    );
     return jsonResponse(200, { success: false, error: 'AI 응답을 처리할 수 없습니다.', code: 'UPSTREAM_ERROR' });
   }
 
