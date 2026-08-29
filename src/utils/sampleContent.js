@@ -63,6 +63,8 @@ export function buildCopyText(platform, content, part) {
     return [content.hook, content.body, content.hashtags?.join(' ')].filter(Boolean).join('\n\n');
   }
 
-  // [전체 복사] (Threads/Facebook): 본문 + UTM 링크
-  return content.utmUrl ? `${content.body}\n\n${content.utmUrl}` : content.body;
+  // [전체 복사] (Threads/Facebook): (후킹이 있으면 후킹 +) 본문 + UTM 링크
+  // STEP 8: AI가 Facebook에 hook을 별도 필드로 주므로, hook이 있으면 함께 포함한다.
+  const parts = [content.hook, content.body, content.utmUrl].filter(Boolean);
+  return parts.join('\n\n');
 }

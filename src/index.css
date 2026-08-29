@@ -250,6 +250,39 @@ th, td {
   font-size: 15px;
 }
 
+/* STEP 8: AI 생성 문구 표시 */
+.ai-content {
+  font-size: 13px;
+  margin: 6px 0;
+  white-space: pre-line;
+}
+
+.ai-hook {
+  font-weight: 700;
+  margin: 0 0 4px;
+}
+
+.ai-body {
+  margin: 0 0 4px;
+}
+
+.ai-hashtags {
+  margin: 0;
+  color: #2563eb;
+}
+
+.ai-placeholder {
+  font-size: 13px;
+  color: #888;
+  margin: 6px 0;
+}
+
+.ai-error {
+  font-size: 13px;
+  color: #b91c1c;
+  margin: 4px 0;
+}
+
 .copy-actions {
   display: flex;
   gap: 8px;
