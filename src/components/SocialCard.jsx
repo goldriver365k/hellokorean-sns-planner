@@ -150,6 +150,22 @@ export default function SocialCard({
 
       {message && <p className="copy-message">{message}</p>}
 
+      {displayContent?.keywords?.length > 0 && (
+        <div className="link-row">
+          <span className="link-label">검색어</span>
+          <span className="link-value" title={displayContent.keywords.join(', ')}>
+            {displayContent.keywords.join(', ')}
+          </span>
+          <button
+            type="button"
+            className="small-btn"
+            onClick={() => copy(displayContent.keywords.join(', '), '검색어가 복사되었습니다')}
+          >
+            검색어 복사
+          </button>
+        </div>
+      )}
+
       <div className="link-row">
         <span className="link-label">홍보 링크</span>
         <span className="link-value" title={utmUrl}>

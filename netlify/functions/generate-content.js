@@ -12,12 +12,15 @@ import { SOCIAL_CONFIG } from '../../src/config/socialConfig.js';
 import { DEFAULT_SERVICE_INFO } from '../../src/utils/storage.js';
 
 // SNS별로 AI 응답에 반드시 있어야 하는 필드
+// keywords: 대상 언어로 된 검색어(해시태그 "#" 없이, SNS 내 검색용) — 4개 SNS 공통
 const REQUIRED_FIELDS = {
-  Threads: ['body'],
-  Facebook: ['hook', 'body'],
-  Instagram: ['hook', 'body', 'hashtags'],
-  Telegram: ['title', 'body'],
+  Threads: ['body', 'keywords'],
+  Facebook: ['hook', 'body', 'keywords'],
+  Instagram: ['hook', 'body', 'hashtags', 'keywords'],
+  Telegram: ['title', 'body', 'keywords'],
 };
+
+const ARRAY_FIELDS = new Set(['hashtags', 'keywords']);
 
 // 짧고 고정된 공통 instruction (매 요청마다 긴 설명을 반복하지 않는다)
 const SYSTEM_PROMPT = `You create localized social media posts for HelloKorean.
@@ -41,21 +44,24 @@ Rules:
 - Match the platform style.
 - Use the supplied topic.
 - Do not invent another URL.
+- "keywords" = 3-5 short plain search terms (NOT hashtags, no "#") in the target language that someone
+  would actually type into that platform's search bar to find this kind of post. Keep them realistic
+  and specific to the topic/country, not generic filler words.
 - Return only the requested structured content.
 - Return raw JSON only. Do not use markdown code fences.`;
 
 function getFormatInstruction(platform) {
   if (platform === 'Threads') {
-    return 'Return JSON exactly as {"body": "..."}. Style: short, conversational, natural opening line, 2-4 short lines, no heavy hashtags.';
+    return 'Return JSON exactly as {"body": "...", "keywords": ["...", "..."]}. Style: short, conversational, natural opening line, 2-4 short lines, no heavy hashtags.';
   }
   if (platform === 'Facebook') {
-    return 'Return JSON exactly as {"hook": "...", "body": "..."}. hook = one natural attention line (not a bold headline). body is slightly more detailed than Threads.';
+    return 'Return JSON exactly as {"hook": "...", "body": "...", "keywords": ["...", "..."]}. hook = one natural attention line (not a bold headline). body is slightly more detailed than Threads.';
   }
   if (platform === 'Instagram') {
-    return 'Return JSON exactly as {"hook": "...", "body": "...", "hashtags": ["...", "..."]}. Short hook, short caption, a few line breaks, 3-6 hashtags. Do not force the URL into the caption; a natural CTA like "learn for free via the link in bio" is fine.';
+    return 'Return JSON exactly as {"hook": "...", "body": "...", "hashtags": ["...", "..."], "keywords": ["...", "..."]}. Short hook, short caption, a few line breaks, 3-6 hashtags. Do not force the URL into the caption; a natural CTA like "learn for free via the link in bio" is fine. keywords are separate from hashtags (no "#").';
   }
   if (platform === 'Telegram') {
-    return 'Return JSON exactly as {"title": "...", "body": "..."}. title: short and clear. body: information-focused.';
+    return 'Return JSON exactly as {"title": "...", "body": "...", "keywords": ["...", "..."]}. title: short and clear. body: information-focused.';
   }
   return '';
 }
@@ -100,10 +106,11 @@ function validateContent(platform, obj) {
   const result = {};
   for (const field of required) {
     const value = obj[field];
-    if (field === 'hashtags') {
+    if (ARRAY_FIELDS.has(field)) {
       if (!Array.isArray(value) || value.length === 0) return null;
-      result.hashtags = value.map((h) => String(h)).filter(Boolean);
-      if (result.hashtags.length === 0) return null;
+      const cleaned = value.map((v) => String(v).trim()).filter(Boolean);
+      if (cleaned.length === 0) return null;
+      result[field] = cleaned;
     } else {
       if (typeof value !== 'string' || !value.trim()) return null;
       result[field] = value.trim();
